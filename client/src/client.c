@@ -108,8 +108,8 @@ void leer_consola(t_log* logger)
 			break;
 		}
 
-		log_info(logger, leido);
-		add_history(leido);
+		log_info(logger, "La linea dice %s ", leido);
+		
 
 		free(leido);
 	}
@@ -129,10 +129,12 @@ void paquete(int conexion)
 
 	// Leemos y esta vez agregamos las lineas al paquete
 
-	leido = readline("> ");
+	
 
 	while (1)
 	{
+		leido = readline("> ");
+		
 		if(string_is_empty(leido))
 		{
 			free(leido);
@@ -141,7 +143,7 @@ void paquete(int conexion)
 
 		agregar_a_paquete(paquete, leido, strlen(leido)+1);
 
-		leido = readline("> ");
+
 	}
 
 	enviar_paquete(paquete, conexion);

@@ -7,8 +7,7 @@ int iniciar_servidor(void)
 	// Quitar esta línea cuando hayamos terminado de implementar la funcion
 	//assert(!"no implementado!");
 
-	
-
+	int socket_servidor;
 	struct addrinfo hints, *servinfo, *p;
 
 	memset(&hints, 0, sizeof(hints));
@@ -20,14 +19,26 @@ int iniciar_servidor(void)
 
 	// Creamos el socket de escucha del servidor
 
-	int socket_servidor = socket(servinfo->ai_family,
+	socket_servidor = socket(servinfo->ai_family,
                         servinfo->ai_socktype,
                         servinfo->ai_protocol);
+					
+	if (socket_servidor == -1)
+	{
+		log_error(logger, "Error en socket %s", strerror(socket_servidor));
+		exit(-2);
+	}
 
 
 	// Asociamos el socket a un puerto
 
-	bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
+	int bindRes = bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
+
+	if(bindRes != 0)
+	{
+		herror("Fallo al asociar el socket a un puerto");
+		exit(-3);
+	}
 
 	// Escuchamos las conexiones entrantes
 
@@ -43,11 +54,13 @@ int iniciar_servidor(void)
 int esperar_cliente(int socket_servidor)
 {
 	// Quitar esta línea cuando hayamos terminado de implementar la funcion
-	assert(!"no implementado!");
+	//assert(!"no implementado!");
+
+	log_info(logger, "Esperando cliente...");
 
 	// Aceptamos un nuevo cliente
-	
-	int socket_cliente = accept(socket_servidor, NULL, NULL);
+	int socket_cliente;
+	socket_cliente = accept(socket_servidor, NULL, NULL);
 
 	log_info(logger, "Se conecto un cliente!");
 
