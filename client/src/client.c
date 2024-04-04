@@ -50,6 +50,8 @@ int main(void)
 
 	// Enviamos al servidor el valor de CLAVE como mensaje
 
+	enviar_mensaje(valor, conexion);
+
 	// Armamos y enviamos el paquete
 	paquete(conexion);
 
@@ -92,28 +94,28 @@ void leer_consola(t_log* logger)
 	char* leido;
 
 	// La primera te la dejo de yapa
-	leido = readline("> ");
+	
 
 	// El resto, las vamos leyendo y logueando hasta recibir un string vacío
 
 	while(1)
 	{
-		if(!strncmp(leido, "", 1))
-		{
-			log_info(logger, leido);
-		}
-		else
+		leido = readline("> ");
+
+		if(string_is_empty(leido))
 		{
 			free(leido);
 			break;
 		}
 
-		leido = readline("> ");
+		log_info(logger, leido);
+		add_history(leido);
+
+		free(leido);
 	}
 
 
 	// ¡No te olvides de liberar las lineas antes de regresar!
-	free(leido);
 }
 
 
@@ -121,12 +123,33 @@ void paquete(int conexion)
 {
 	// Ahora toca lo divertido!
 	char* leido;
-	t_paquete* paquete;
+	t_paquete* paquete = crear_paquete();
+
+	printf("Ingrese las lineas que desea agregar al paquete, finalice con el caracter nulo: ");
 
 	// Leemos y esta vez agregamos las lineas al paquete
 
+	leido = readline("> ");
+
+	while (1)
+	{
+		if(string_is_empty(leido))
+		{
+			free(leido);
+			break;
+		}
+
+		agregar_a_paquete(paquete, leido, strlen(leido)+1);
+
+		leido = readline("> ");
+	}
+
+	enviar_paquete(paquete, conexion);
 
 	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
+
+	eliminar_paquete(paquete);
+	free(leido);
 	
 }
 
@@ -137,5 +160,6 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 
 	log_destroy(logger);
 	config_destroy(config);
+	liberar_conexion(conexion);
 
 }
