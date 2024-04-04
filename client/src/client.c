@@ -150,7 +150,7 @@ void paquete(int conexion)
 
 	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
 
-	eliminar_paquete(paquete);
+	
 	free(leido);
 	
 }
@@ -163,5 +163,5 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 	log_destroy(logger);
 	config_destroy(config);
 	liberar_conexion(conexion);
-
+	eliminar_paquete(paquete);
 }
